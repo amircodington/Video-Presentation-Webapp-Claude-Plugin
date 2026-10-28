@@ -1,0 +1,71 @@
+# Sample scenario for the bundled "Northwind Ledger" demo app (examples/sample-app).
+# The e2e test serves the app on a random port and overrides video.url.
+
+video:
+  title: Northwind Ledger in 30 seconds
+  format: desktop
+  url: http://localhost:4173
+  subtitles: [en, fa]
+  style:
+    background: soft-gradient
+    accent: "#2747D9"
+
+scenes:
+  - id: dashboard
+    title: Everything at a glance
+    beats:
+      - do: goto
+        path: /
+        camera: wide
+        hold: 1.5
+        say:
+          en: Northwind Ledger shows your whole business on one screen.
+          fa: نورث‌ویند لجر کل کسب‌وکار شما را در یک صفحه نشان می‌دهد.
+      - do: hover
+        target: role=region[name="Revenue"]
+        camera: focus
+        callout: Live revenue
+        hold: 1.5
+        say:
+          en: Revenue, customers and payments update in real time.
+          fa: درآمد، مشتریان و پرداخت‌ها به‌صورت لحظه‌ای به‌روز می‌شوند.
+
+  - id: reports
+    title: Reports in seconds
+    beats:
+      - do: goto
+        path: /reports.html
+        camera: wide
+        say:
+          en: Every invoice and report lives in one place.
+          fa: همه‌ی فاکتورها و گزارش‌ها در یک جا هستند.
+      - do: type
+        target: label=Search
+        text: Acme
+        say:
+          en: Type a name to find its reports instantly.
+          fa: یک نام را تایپ کنید تا گزارش‌هایش فوراً پیدا شوند.
+      - do: click
+        target: role=button[name="Export"]
+        callout: One-click export
+        hold: 1.5
+        say:
+          en: Export the report with a single click.
+          fa: گزارش را تنها با یک کلیک خروجی بگیرید.
+
+  - id: settings
+    title: Stay in the loop
+    beats:
+      - do: goto
+        path: /settings.html
+        camera: wide
+        say:
+          en: Choose exactly how you want to be notified.
+          fa: دقیقاً انتخاب کنید که چطور مطلع شوید.
+      - do: click
+        target: role=switch[name="Weekly email digest"]
+        callout: Weekly digest
+        hold: 1.5
+        say:
+          en: Turn on a weekly digest in one tap.
+          fa: خلاصه‌ی هفتگی را با یک لمس فعال کنید.

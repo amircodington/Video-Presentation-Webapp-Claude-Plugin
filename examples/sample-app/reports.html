@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reports · Northwind Ledger</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">N</span><span class="brand-name">Northwind Ledger</span></a>
+  <nav class="nav" aria-label="Main">
+    <a href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></a>
+    <a href="reports.html" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg><span>Reports</span></a>
+    <a href="settings.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></a>
+  </nav>
+  <div class="sidebar-foot"><span class="avatar" aria-hidden="true">LM</span><div class="who"><strong>Leila Moradi</strong><span>Finance lead</span></div></div>
+</aside>
+<main>
+  <div class="page-head">
+    <div><h1>Reports</h1><p>Every invoice and summary, ready to share.</p></div>
+  </div>
+  <section class="card" aria-labelledby="reports-title">
+    <h2 id="reports-title" hidden>All reports</h2>
+    <div class="toolbar">
+      <div class="search"><label for="search">Search</label>
+        <div class="field"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="search" type="search" placeholder="Company or report" autocomplete="off"></div></div>
+      <span class="count" id="row-count" aria-live="polite">8 of 8 reports</span>
+      <button class="btn btn-primary" id="export" type="button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Export</button>
+    </div>
+    <table>
+      <thead><tr><th>Company</th><th class="hide-sm">Report</th><th class="hide-sm">Date</th><th>Status</th><th class="num">Amount</th></tr></thead>
+      <tbody id="report-rows">
+        <tr><td><div class="co"><span class="logo" style="background:#2747D9" aria-hidden="true">AC</span>Acme Corp</div></td><td class="hide-sm">Q3 revenue summary</td><td class="hide-sm">Oct 24, 2026</td><td><span class="pill good">Paid</span></td><td class="num">$124,500</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#0E9F6E" aria-hidden="true">G</span>Globex</div></td><td class="hide-sm">Subscription renewals</td><td class="hide-sm">Oct 22, 2026</td><td><span class="pill neutral">Sent</span></td><td class="num">$48,250</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#D97706" aria-hidden="true">I</span>Initech</div></td><td class="hide-sm">Overdue invoices</td><td class="hide-sm">Oct 21, 2026</td><td><span class="pill bad">Overdue</span></td><td class="num">$13,900</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#DC2626" aria-hidden="true">UH</span>Umbrella Health</div></td><td class="hide-sm">Annual contract</td><td class="hide-sm">Oct 19, 2026</td><td><span class="pill good">Paid</span></td><td class="num">$210,000</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#7C3AED" aria-hidden="true">SL</span>Stark Logistics</div></td><td class="hide-sm">Shipping costs</td><td class="hide-sm">Oct 17, 2026</td><td><span class="pill warn">Pending</span></td><td class="num">$32,780</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#2747D9" aria-hidden="true">AC</span>Acme Corp</div></td><td class="hide-sm">Q3 expense breakdown</td><td class="hide-sm">Oct 15, 2026</td><td><span class="pill neutral">Draft</span></td><td class="num">$61,320</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#0891B2" aria-hidden="true">WA</span>Wayne Analytics</div></td><td class="hide-sm">Consulting hours</td><td class="hide-sm">Oct 12, 2026</td><td><span class="pill good">Paid</span></td><td class="num">$27,400</td></tr>
+        <tr><td><div class="co"><span class="logo" style="background:#DB2777" aria-hidden="true">HR</span>Hooli Retail</div></td><td class="hide-sm">Holiday forecast</td><td class="hide-sm">Oct 09, 2026</td><td><span class="pill warn">Pending</span></td><td class="num">$95,150</td></tr>
+      </tbody>
+    </table>
+    <div class="empty" id="empty" hidden>No reports match your search.</div>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="check"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Report ready</div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
