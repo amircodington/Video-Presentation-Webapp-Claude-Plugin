@@ -1,0 +1,502 @@
+<title>Demo Director Blueprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an editing-suite blueprint. One wide column of "reels"; each section is a numbered track because the plugin really is a sequence of stages. */
+:root{
+  --paper:#EEF1F5; --panel:#FFFFFF; --ink:#121826; --muted:#566077; --line:#CBD2DE;
+  --cobalt:#2747D9; --cobalt-soft:#DDE3FB; --rec:#D92D32; --amber:#B9780A; --amber-soft:#FBEFD6;
+  --screen:#1B2233; --screen-ink:#E8ECF5;
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0C1018; --panel:#141A26; --ink:#E6EAF2; --muted:#8C96AB; --line:#262E3E;
+  --cobalt:#8297FF; --cobalt-soft:#1E2747; --rec:#FF5C61; --amber:#F2B640; --amber-soft:#2E2512;
+  --screen:#070A10; --screen-ink:#E8ECF5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0C1018; --panel:#141A26; --ink:#E6EAF2; --muted:#8C96AB; --line:#262E3E;
+  --cobalt:#8297FF; --cobalt-soft:#1E2747; --rec:#FF5C61; --amber:#F2B640; --amber-soft:#2E2512;
+  --screen:#070A10; --screen-ink:#E8ECF5; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:var(--cobalt);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:.01em;text-wrap:balance;line-height:1.02;margin:0}
+h1{font-size:clamp(48px,9vw,104px);font-weight:800;text-transform:uppercase}
+h2{font-size:clamp(32px,5vw,52px);font-weight:800;text-transform:uppercase}
+h3{font-size:24px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+p{margin:0;max-width:68ch}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+.label{font:600 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tc{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* top slate */
+.slate{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:space-between;padding-block:20px;border-bottom:1px solid var(--line)}
+.rec{display:inline-flex;gap:8px;align-items:center;font:600 12px/1 var(--f-mono);letter-spacing:.12em;color:var(--rec)}
+.rec i{width:10px;height:10px;border-radius:50%;background:var(--rec);animation:blink 1.4s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:center;padding-block:48px 56px}
+.hero p.lede{font-size:19px;color:var(--muted);margin-top:20px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{font:500 13px/1 var(--f-mono);padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.chip b{color:var(--cobalt);font-weight:600}
+@media (max-width:820px){.hero{grid-template-columns:minmax(0,1fr)}}
+
+/* animated demo stage */
+.stage{position:relative;aspect-ratio:16/10;max-width:100%;background:var(--screen);border-radius:10px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(10,20,50,.45)}
+.cam{position:absolute;inset:0;transform-origin:72% 62%;animation:cam 9s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes cam{0%,12%{transform:scale(1)}26%,52%{transform:scale(1.9)}64%,100%{transform:scale(1)}}
+.app{position:absolute;inset:7% 6% 15% 6%;background:#F4F6FA;border-radius:6px;overflow:hidden;display:grid;grid-template-rows:22px 1fr}
+.app .bar{background:#E3E7EF;display:flex;gap:5px;align-items:center;padding:0 8px}
+.app .bar span{width:7px;height:7px;border-radius:50%;background:#C2C9D6}
+.app .bar em{margin-left:10px;flex:1;height:10px;border-radius:5px;background:#fff}
+.app .body{display:grid;grid-template-columns:22% 1fr;gap:8px;padding:10px}
+.app .side{display:grid;gap:6px;align-content:start}
+.app .side i{height:8px;border-radius:3px;background:#D5DBE6}
+.app .side i:first-child{background:#9AA9F0}
+.app .main{display:grid;grid-template-rows:auto 1fr auto;gap:8px}
+.app .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.app .kpis i{height:34px;border-radius:4px;background:#fff;border:1px solid #E2E6EE}
+.app .chart{border-radius:4px;background:#fff;border:1px solid #E2E6EE;position:relative;overflow:hidden}
+.app .chart svg{position:absolute;inset:0;width:100%;height:100%}
+.app .row{display:flex;justify-content:flex-end}
+.app .btn{width:30%;height:18px;border-radius:4px;background:#2747D9;position:relative}
+.app .btn::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;border:2px solid #2747D9;opacity:0;animation:ripple 9s infinite}
+@keyframes ripple{0%,38%{opacity:0;transform:scale(1)}39%{opacity:.9;transform:scale(1)}46%{opacity:0;transform:scale(9)}100%{opacity:0}}
+.cursor{position:absolute;width:16px;height:16px;left:20%;top:30%;animation:cur 9s cubic-bezier(.3,.1,.2,1) infinite;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+@keyframes cur{0%,8%{left:20%;top:30%}30%,56%{left:76%;top:73%}38%{transform:scale(.8)}40%{transform:scale(1)}72%,100%{left:20%;top:30%}}
+.sub{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);max-width:88%;text-align:center;font:500 clamp(10px,1.6vw,14px)/1.3 var(--f-body);color:var(--screen-ink);background:rgba(0,0,0,.55);padding:5px 10px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub span{position:absolute;inset:5px 10px;opacity:0}
+.sub span:nth-child(1){animation:s1 9s infinite}
+.sub span:nth-child(2){animation:s2 9s infinite}
+.sub span:nth-child(3){animation:s3 9s infinite}
+@keyframes s1{0%,24%{opacity:1}26%,100%{opacity:0}}
+@keyframes s2{0%,25%{opacity:0}27%,58%{opacity:1}60%,100%{opacity:0}}
+@keyframes s3{0%,59%{opacity:0}61%,98%{opacity:1}100%{opacity:0}}
+.sub .ghost{visibility:hidden;position:static}
+.hud{position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;font:600 10px/1 var(--f-mono);letter-spacing:.1em;color:#9AA4BA}
+.hud .r{color:var(--rec)}
+.callout{position:absolute;right:8%;top:40%;font:600 clamp(9px,1.3vw,12px)/1.2 var(--f-mono);color:#fff;background:#2747D9;padding:5px 8px;border-radius:3px;opacity:0;animation:callout 9s infinite}
+@keyframes callout{0%,30%{opacity:0;transform:translateY(6px)}34%,52%{opacity:1;transform:none}56%,100%{opacity:0}}
+
+/* sections */
+section{padding-block:56px;border-top:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px 20px;align-items:baseline;margin-bottom:28px}
+.sec-head .n{font:800 44px/1 var(--f-display);color:var(--cobalt)}
+.sec-head p{grid-column:2;color:var(--muted);margin-top:10px}
+@media (max-width:560px){.sec-head{grid-template-columns:minmax(0,1fr)}.sec-head p{grid-column:1}}
+
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:820px){.grid3{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:680px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:10px;align-content:start;min-width:0}
+.card p{color:var(--muted);font-size:15px}
+.note{border-left:3px solid var(--amber);background:var(--amber-soft);padding:14px 16px;border-radius:0 6px 6px 0;font-size:15px}
+
+/* pipeline svg */
+.diagram{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.diagram svg{display:block;min-width:820px;width:100%;height:auto}
+.d-node rect{fill:var(--paper);stroke:var(--line);stroke-width:1.5}
+.d-node.key rect{fill:var(--cobalt-soft);stroke:var(--cobalt)}
+.d-node.out rect{fill:var(--amber-soft);stroke:var(--amber)}
+.d-t{fill:var(--ink);font:600 15px var(--f-body)}
+.d-s{fill:var(--muted);font:12px var(--f-mono)}
+.d-n{fill:var(--cobalt);font:800 20px var(--f-display)}
+.d-flow{fill:none;stroke:var(--cobalt);stroke-width:2;stroke-dasharray:6 6;animation:flow 1.2s linear infinite}
+.d-flow.amber{stroke:var(--amber)}
+.d-base{fill:none;stroke:var(--line);stroke-width:2}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.d-arrow{fill:var(--cobalt)}
+.d-arrow.amber{fill:var(--amber)}
+.d-lane{fill:none;stroke:var(--line);stroke-dasharray:2 5}
+.d-lt{fill:var(--muted);font:600 11px var(--f-mono);letter-spacing:.12em}
+
+/* conversation timeline */
+.conv{display:grid;gap:0;counter-reset:c}
+.turn{display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding-block:14px;border-bottom:1px dashed var(--line)}
+.turn .who{font:600 12px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.turn.c .who{color:var(--cobalt)}
+.turn .say{min-width:0}
+.turn .say p{color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.opt{font:500 13px/1 var(--f-mono);padding:8px 10px;border-radius:4px;border:1px solid var(--cobalt);color:var(--cobalt)}
+.opt.on{background:var(--cobalt);color:var(--panel)}
+@media (max-width:560px){.turn{grid-template-columns:minmax(0,1fr);gap:4px}}
+
+/* size presets */
+.sizes{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:end}
+@media (max-width:680px){.sizes{grid-template-columns:minmax(0,1fr)}}
+.frame{border:2px solid var(--ink);border-radius:8px;position:relative;display:grid;place-items:center;background:var(--panel);max-width:100%}
+.frame.d{aspect-ratio:16/9}
+.frame.m{aspect-ratio:9/16;width:min(100%,220px);justify-self:center;border-radius:22px}
+.frame .dim{font:600 13px var(--f-mono);color:var(--muted);text-align:center;line-height:1.6}
+.frame .dim b{display:block;font:800 30px/1 var(--f-display);color:var(--ink)}
+.spec{margin-top:12px;font-size:14px;color:var(--muted)}
+
+/* camera math */
+.cam-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:760px){.cam-demo{grid-template-columns:minmax(0,1fr)}}
+.cam-svg{width:100%;height:auto;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.c-full{fill:var(--paper);stroke:var(--line);stroke-width:1.5}
+.c-el{fill:var(--cobalt-soft);stroke:var(--cobalt);stroke-width:1.5}
+.c-view{fill:none;stroke:var(--rec);stroke-width:2.5;animation:view 6s cubic-bezier(.65,0,.35,1) infinite alternate}
+@keyframes view{0%,15%{transform:translate(0,0) scale(1)}85%,100%{transform:translate(214px,118px) scale(.5)}}
+.c-t{fill:var(--muted);font:12px var(--f-mono)}
+.c-tr{fill:var(--rec);font:600 12px var(--f-mono)}
+
+/* code */
+pre{margin:0;background:var(--screen);color:var(--screen-ink);border-radius:6px;padding:16px 18px;overflow-x:auto;font:13px/1.65 var(--f-mono)}
+.code{position:relative;min-width:0}
+.copy{position:absolute;top:8px;right:8px;font:600 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.1);color:#E8ECF5;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:6px 8px;cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.2)}
+pre .k{color:#8FA4FF} pre .s{color:#F2C26B} pre .c{color:#7D879C}
+
+/* repos table */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+th{font:600 11px/1.2 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--paper)}
+tr:last-child td{border-bottom:0}
+td code{font-size:12px;word-break:break-all}
+.role{display:inline-block;font:600 11px/1 var(--f-mono);padding:4px 6px;border-radius:3px;white-space:nowrap}
+.role.core{background:var(--cobalt);color:var(--panel)}
+.role.use{background:var(--cobalt-soft);color:var(--cobalt)}
+.role.ref{background:var(--amber-soft);color:var(--amber)}
+
+/* tree */
+.tree{font:13px/1.75 var(--f-mono);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;overflow-x:auto;white-space:pre;margin:0;color:var(--ink)}
+.tree .d{color:var(--cobalt);font-weight:600}
+.tree .c{color:var(--muted)}
+
+/* decisions */
+.dec{display:grid;gap:12px}
+.dec .card{grid-template-columns:auto minmax(0,1fr);gap:6px 16px;align-items:start}
+.dec .q{font:800 28px/1 var(--f-display);color:var(--rec)}
+.dec .card p{grid-column:2}
+.dec .rec-pick{grid-column:2;font:500 13px var(--f-mono);color:var(--cobalt)}
+
+.foot{margin-top:40px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}.sub span:nth-child(2){opacity:1}.callout{opacity:1}}
+</style>
+
+<div class="wrap">
+  <div class="slate">
+    <span class="rec"><i></i>REC · BLUEPRINT</span>
+    <span class="label tc">Take 01 · 2026-10-28 · for Mohammad</span>
+  </div>
+
+  <header class="hero">
+    <div>
+      <span class="label">Claude Code plugin · research &amp; plan</span>
+      <h1 style="margin-top:12px">Demo<br>Director</h1>
+      <p class="lede">A plugin that opens your web app in a browser, writes a feature-by-feature scenario, records it cleanly, then directs it like Screen Studio would: camera zooms, a smooth cursor, callouts and timed explanations. The output is a silent MP4 plus matching <code>.srt</code> and <code>.vtt</code> subtitle files, rendered with HyperFrames.</p>
+      <div class="meta">
+        <span class="chip"><b>in</b> URL + login</span>
+        <span class="chip"><b>ask</b> desktop or mobile</span>
+        <span class="chip"><b>out</b> demo.mp4 (mute)</span>
+        <span class="chip"><b>out</b> demo.srt · demo.vtt</span>
+      </div>
+    </div>
+    <div class="stage" role="img" aria-label="Animated example: the camera zooms into a button, the cursor clicks it, and subtitles change with each beat">
+      <div class="cam">
+        <div class="app">
+          <div class="bar"><span></span><span></span><span></span><em></em></div>
+          <div class="body">
+            <div class="side"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="main">
+              <div class="kpis"><i></i><i></i><i></i></div>
+              <div class="chart"><svg viewBox="0 0 200 60" preserveAspectRatio="none"><path d="M0 50 L25 42 L50 46 L75 30 L100 34 L125 20 L150 24 L175 10 L200 14" fill="none" stroke="#2747D9" stroke-width="2"/><path d="M0 50 L25 42 L50 46 L75 30 L100 34 L125 20 L150 24 L175 10 L200 14 L200 60 L0 60Z" fill="#2747D9" opacity=".12"/></svg></div>
+              <div class="row"><div class="btn"></div></div>
+            </div>
+          </div>
+        </div>
+        <svg class="cursor" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 1 L2 13 L5.5 9.6 L8 15 L10 14 L7.6 8.8 L12.5 8.8 Z" fill="#fff" stroke="#111" stroke-width="1"/></svg>
+        <div class="callout">Export · one click</div>
+      </div>
+      <div class="hud"><span class="r">● REC</span><span class="tc">1920×1080 · 60 fps</span></div>
+      <div class="sub"><span class="ghost">The dashboard shows every account at a glance.</span><span>The dashboard shows every account at a glance.</span><span>Export the report with one click.</span><span>The file is ready in seconds.</span></div>
+    </div>
+  </header>
+
+  <!-- 1 -->
+  <section>
+    <div class="sec-head"><span class="n">01</span><div><h2>What your earlier chats gave us</h2><p>I read the chats you pointed to so the plugin reuses what already worked.</p></div></div>
+    <div class="grid2">
+      <div class="card">
+        <span class="label">"Better tiz" + TIZ hackathon chats</span>
+        <h3>A video was planned, not built</h3>
+        <p>These chats are about the Wallex trading bot. The only video item is a planned 5-minute hackathon video (architecture, the AI judge with example verdicts, risk, backtest results). No recording code exists there, so nothing to port, but it makes a good first test subject for the plugin.</p>
+      </div>
+      <div class="card">
+        <span class="label">"Hyperframes plugin installation" chat (Oct 20)</span>
+        <h3>The HyperFrames setup that worked</h3>
+        <p>On your Mac the HyperFrames Claude plugin (v0.8.181) rendered a reel with <code>plugin-cli.mjs render -q delivery --fps 30</code>, checked frames with <code>snapshot --at 1.2,8.0</code>, and cut people out with <code>remove-background</code>. HeyGen's Avatar IV quota ran out after 18 s, so the plugin should never depend on HeyGen paid features.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <div class="sec-head"><span class="n">02</span><div><h2>The pipeline</h2><p>The key idea, taken from Screen Studio, Recordly and Pagecast: <b>record clean, direct later</b>. The browser is filmed with no effects, while a log notes where every click, scroll and element was. All camera motion, cursor, callouts and subtitles are then added in HyperFrames from that log, so every take is reproducible and sharp.</p></div></div>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 380" role="img" aria-label="Pipeline: ask size, discover app, write scenario, record, direct, compose in HyperFrames, render outputs">
+        <text class="d-lt" x="16" y="24">CONVERSATION</text>
+        <text class="d-lt" x="16" y="208">MACHINE</text>
+        <line class="d-lane" x1="10" y1="190" x2="990" y2="190"/>
+        <!-- row 1 -->
+        <path class="d-base" d="M190 85 H250"/><path class="d-flow" d="M190 85 H250"/>
+        <path class="d-base" d="M430 85 H490"/><path class="d-flow" d="M430 85 H490"/>
+        <path class="d-base" d="M670 85 H730"/><path class="d-flow" d="M670 85 H730"/>
+        <path class="d-base" d="M820 120 V160 Q820 170 810 170 H110 Q100 170 100 180 V250"/><path class="d-flow" d="M820 120 V160 Q820 170 810 170 H110 Q100 170 100 180 V250"/>
+        <!-- row 2 -->
+        <path class="d-base" d="M190 285 H250"/><path class="d-flow" d="M190 285 H250"/>
+        <path class="d-base" d="M430 285 H490"/><path class="d-flow" d="M430 285 H490"/>
+        <path class="d-base" d="M670 285 H730"/><path class="d-flow amber" d="M670 285 H730"/>
+        <g class="d-node"><rect x="20" y="50" width="170" height="70" rx="6"/><text class="d-n" x="34" y="78">1</text><text class="d-t" x="56" y="78">Ask</text><text class="d-s" x="34" y="102">desktop · mobile</text></g>
+        <g class="d-node"><rect x="250" y="50" width="180" height="70" rx="6"/><text class="d-n" x="264" y="78">2</text><text class="d-t" x="286" y="78">Discover</text><text class="d-s" x="264" y="102">crawl routes + features</text></g>
+        <g class="d-node key"><rect x="490" y="50" width="180" height="70" rx="6"/><text class="d-n" x="504" y="78">3</text><text class="d-t" x="526" y="78">Scenario</text><text class="d-s" x="504" y="102">scenario.yaml → approve</text></g>
+        <g class="d-node"><rect x="730" y="50" width="180" height="70" rx="6"/><text class="d-n" x="744" y="78">4</text><text class="d-t" x="766" y="78">Rehearse</text><text class="d-s" x="744" y="102">dry run, fix selectors</text></g>
+        <g class="d-node key"><rect x="20" y="250" width="170" height="70" rx="6"/><text class="d-n" x="34" y="278">5</text><text class="d-t" x="56" y="278">Record</text><text class="d-s" x="34" y="302">raw.mp4 + events.json</text></g>
+        <g class="d-node"><rect x="250" y="250" width="180" height="70" rx="6"/><text class="d-n" x="264" y="278">6</text><text class="d-t" x="286" y="278">Direct</text><text class="d-s" x="264" y="302">camera + cursor keys</text></g>
+        <g class="d-node key"><rect x="490" y="250" width="180" height="70" rx="6"/><text class="d-n" x="504" y="278">7</text><text class="d-t" x="526" y="278">Compose</text><text class="d-s" x="504" y="302">HyperFrames HTML</text></g>
+        <g class="d-node out"><rect x="730" y="230" width="250" height="110" rx="6"/><text class="d-n" x="744" y="258">8</text><text class="d-t" x="766" y="258">Render</text><text class="d-s" x="744" y="284">demo.mp4   (no audio)</text><text class="d-s" x="744" y="304">demo.srt · demo.vtt</text><text class="d-s" x="744" y="324">storyboard.png</text></g>
+      </svg>
+    </div>
+    <div class="grid3" style="margin-top:20px">
+      <div class="card"><span class="label">Why not zoom live?</span><p>CSS zoom or <code>page.mouse</code> tricks during recording change layout, look jumpy and must be re-recorded for every tweak. In post, a zoom is just a GSAP tween on the video layer and costs a 30-second re-render.</p></div>
+      <div class="card"><span class="label">Why record at 2× density?</span><p>A 2× zoom on 1× footage is blurry. Recording at <code>deviceScaleFactor: 2</code> keeps text crisp at up to 2× camera zoom in a 1080p output.</p></div>
+      <div class="card"><span class="label">Why subtitles from the scenario?</span><p>The video is silent, so there is no speech to transcribe. Each beat's <code>say:</code> line already has a start and end time from the event log, which turns straight into SRT and VTT cues.</p></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <div class="sec-head"><span class="n">03</span><div><h2>How a run feels</h2><p>The plugin's command is interactive. This is the conversation it would hold with you, with my proposed defaults selected.</p></div></div>
+    <div class="conv">
+      <div class="turn"><span class="who">You</span><div class="say"><p><code>/demo-director:new https://panel.example.com</code></p></div></div>
+      <div class="turn c"><span class="who">Claude</span><div class="say"><p>What size is this video for?</p><div class="opts"><span class="opt on">Desktop · 16:9 · 1920×1080</span><span class="opt">Mobile · 9:16 · 1080×1920</span></div></div></div>
+      <div class="turn c"><span class="who">Claude</span><div class="say"><p>Does the app need a login? I'll save the session once to <code>.demo/auth.json</code> and never print the password.</p></div></div>
+      <div class="turn c"><span class="who">Claude</span><div class="say"><p>I found 7 features. Here's a 6-scene scenario at about 75 seconds. Subtitle language?</p><div class="opts"><span class="opt">English</span><span class="opt">فارسی</span><span class="opt on">Both (two files)</span></div></div></div>
+      <div class="turn"><span class="who">You</span><div class="say"><p>Drop scene 4, make scene 2 slower.</p></div></div>
+      <div class="turn c"><span class="who">Claude</span><div class="say"><p>Rehearsal passed. Recording… done. Here's a storyboard of 8 frames to check before the final render.</p></div></div>
+      <div class="turn c"><span class="who">Claude</span><div class="say"><p>Rendered <code>out/demo.mp4</code> (1:12, silent), <code>out/demo.en.srt</code>, <code>out/demo.fa.srt</code> and <code>.vtt</code> copies.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <div class="sec-head"><span class="n">04</span><div><h2>Desktop or mobile</h2><p>The first question decides the browser setup and the final frame. Playwright's device emulation handles mobile touch, user agent and pixel density.</p></div></div>
+    <div class="sizes">
+      <div>
+        <div class="frame d"><div class="dim"><b>1920 × 1080</b>16:9 output</div></div>
+        <p class="spec">Browser viewport <span class="tc">1440×810</span> at density 2, so the raw take is <span class="tc">2880×1620</span>. Framed inside a browser window on a soft background, with a 6 to 10% margin so zooms have room to breathe.</p>
+      </div>
+      <div>
+        <div class="frame m"><div class="dim"><b>1080 × 1920</b>9:16 output</div></div>
+        <p class="spec">Emulated phone viewport <span class="tc">390×844</span> at density 3 (iPhone 15 class), touch enabled, mobile user agent. Taps show as a touch dot instead of an arrow cursor.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <div class="sec-head"><span class="n">05</span><div><h2>Camera math</h2><p>The director reads each element's box from <code>events.json</code> and computes a camera keyframe. The red frame below is the camera; it eases from the full page to the element with some padding.</p></div></div>
+    <div class="cam-demo">
+      <svg class="cam-svg" viewBox="0 0 480 290" role="img" aria-label="Camera viewport easing from the full page to a zoomed region around a button">
+        <rect class="c-full" x="10" y="10" width="460" height="270" rx="6"/>
+        <rect class="c-el" x="330" y="190" width="90" height="30" rx="4"/>
+        <text class="c-t" x="332" y="240">target: #export</text>
+        <rect class="c-view" x="10" y="10" width="460" height="270" rx="6"/>
+        <text class="c-tr" x="16" y="30">camera</text>
+      </svg>
+      <div class="code"><button class="copy" type="button">Copy</button><pre><span class="c">// one camera move per beat</span>
+<span class="k">const</span> pad = <span class="s">1.6</span>;                 <span class="c">// show context</span>
+<span class="k">const</span> zoom = Math.min(
+  <span class="s">2.2</span>,                           <span class="c">// sharpness limit</span>
+  W / (box.w * pad), H / (box.h * pad));
+<span class="k">const</span> cx = box.x + box.w / <span class="s">2</span>;
+<span class="k">const</span> cy = box.y + box.h / <span class="s">2</span>;
+tl.to(<span class="s">"#take"</span>, {
+  scale: zoom,
+  x: W/<span class="s">2</span> - cx*zoom, y: H/<span class="s">2</span> - cy*zoom,
+  duration: <span class="s">0.9</span>, ease: <span class="s">"power3.inOut"</span>
+}, beat.t - <span class="s">0.45</span>);             <span class="c">// lead the click</span></pre></div>
+    </div>
+    <div class="grid3" style="margin-top:20px">
+      <div class="card"><span class="label">Cursor</span><p>Drawn in HyperFrames, never recorded. It travels on a slight bezier arc, 400 to 1200 ms by distance, with a ripple on each click (the Jodit recorder's numbers).</p></div>
+      <div class="card"><span class="label">Dead time</span><p>Waits for network or loading are cut or sped up 4× using the idle gaps in the log, so the final pacing stays brisk.</p></div>
+      <div class="card"><span class="label">Explanatory motion</span><p>Callout labels, a spotlight dim around the target, and chapter title cards between features, from the HyperFrames block registry.</p></div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <div class="sec-head"><span class="n">06</span><div><h2>The scenario file</h2><p>One YAML file is the single source of truth. Claude writes it after exploring the app, you edit it in plain language, and every later step reads it.</p></div></div>
+    <div class="code"><button class="copy" type="button">Copy</button><pre><span class="k">video</span>:
+  <span class="k">format</span>: desktop            <span class="c"># or mobile</span>
+  <span class="k">url</span>: <span class="s">https://panel.example.com</span>
+  <span class="k">auth</span>: .demo/auth.json
+  <span class="k">subtitles</span>: [en, fa]
+  <span class="k">style</span>: { <span class="k">background</span>: soft-gradient, <span class="k">frame</span>: browser, <span class="k">accent</span>: <span class="s">"#2747D9"</span> }
+<span class="k">scenes</span>:
+  - <span class="k">id</span>: dashboard
+    <span class="k">title</span>: Everything at a glance       <span class="c"># chapter card</span>
+    <span class="k">beats</span>:
+      - { <span class="k">do</span>: goto, <span class="k">path</span>: /dashboard, <span class="k">camera</span>: wide,
+          <span class="k">say</span>: { <span class="k">en</span>: <span class="s">"The dashboard shows every account at a glance."</span>,
+                 <span class="k">fa</span>: <span class="s">"داشبورد همه‌ی حساب‌ها را یک‌جا نشان می‌دهد."</span> } }
+      - { <span class="k">do</span>: hover, <span class="k">target</span>: <span class="s">"role=region[name='Balance']"</span>, <span class="k">camera</span>: focus,
+          <span class="k">callout</span>: <span class="s">"Live balance"</span>, <span class="k">say</span>: { <span class="k">en</span>: <span class="s">"Balances update in real time."</span> } }
+  - <span class="k">id</span>: export
+    <span class="k">beats</span>:
+      - { <span class="k">do</span>: click, <span class="k">target</span>: <span class="s">"role=button[name='Export']"</span>, <span class="k">camera</span>: focus, <span class="k">hold</span>: 1.5,
+          <span class="k">say</span>: { <span class="k">en</span>: <span class="s">"Export the report with one click."</span> } }
+      - { <span class="k">do</span>: type, <span class="k">target</span>: <span class="s">"label=Search"</span>, <span class="k">text</span>: <span class="s">"BTC"</span>, <span class="k">speed</span>: human }</pre></div>
+  </section>
+
+  <!-- 7 -->
+  <section>
+    <div class="sec-head"><span class="n">07</span><div><h2>Repos and skills to use</h2><p>Core pieces the plugin depends on, ones worth installing alongside it, and references whose techniques I borrowed.</p></div></div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Project</th><th>Role</th><th>What we take from it</th><th>Install</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://github.com/heygen-com/hyperframes">heygen-com/hyperframes</a></td><td><span class="role core">core</span></td><td>HTML + GSAP compositions rendered to deterministic MP4 (Apache-2.0, Node 22+, FFmpeg). Skills: <code>/hyperframes</code>, <code>/hyperframes-cli</code>, <code>/hyperframes-registry</code>, <code>/media-use</code>.</td><td><code>claude plugin marketplace add heygen-com/hyperframes</code><br><code>claude plugin install hyperframes@hyperframes</code></td></tr>
+          <tr><td><a href="https://github.com/microsoft/playwright">microsoft/playwright</a></td><td><span class="role core">core</span></td><td>Drives the browser and device emulation. Version 1.59 added <code>page.screencast</code> with <code>onFrame</code> JPEG frames, chapters and overlays; <code>recordVideo</code> stays as a fallback.</td><td><code>npm i -D playwright</code><br><code>npx playwright install --with-deps chromium</code></td></tr>
+          <tr><td><a href="https://playwright.dev/agent-cli/skills">playwright-cli skills</a></td><td><span class="role use">use</span></td><td>Lets Claude explore the app during the Discover step (snapshots, refs, sessions, storage state, video recording guide).</td><td><code>playwright-cli install --skills</code></td></tr>
+          <tr><td><a href="https://github.com/digitalsamba/claude-code-video-toolkit">digitalsamba/claude-code-video-toolkit</a></td><td><span class="role use">use</span></td><td><code>playwright-recording</code> skill: visible cursor workaround, <code>slowMo</code>, click ripples, login and scroll scenarios.</td><td><code>npx -y skills add digitalsamba/claude-code-video-toolkit --skill playwright-recording --agent claude-code</code></td></tr>
+          <tr><td><a href="https://glama.ai/mcp/servers/mcpware/pagecast">Pagecast (@mcpware/pagecast)</a></td><td><span class="role ref">ref</span></td><td>Closest existing tool: an MCP that records with bounding boxes and timestamps, then does "cinematic" crop-and-pan exports. Our Direct step copies this idea.</td><td><code>npx -y @mcpware/pagecast</code></td></tr>
+          <tr><td><a href="https://github.com/gooseworks-ai/goose-skills">gooseworks-ai/goose-skills</a></td><td><span class="role ref">ref</span></td><td><code>video-polish</code> skill: narration-timed zoom and pan with ease-in-out on an existing recording.</td><td>clone, copy <code>video-polish</code> into <code>~/.claude/skills</code></td></tr>
+          <tr><td><a href="https://github.com/majiayu000/claude-skill-registry">majiayu000/claude-skill-registry</a></td><td><span class="role ref">ref</span></td><td><code>browser-recording</code> skill: Playwright spec with video on, WebM to GIF.</td><td>clone, copy <code>skills/data/browser-recording</code></td></tr>
+          <tr><td><a href="https://github.com/alexey-pelykh/puppeteer-capture">alexey-pelykh/puppeteer-capture</a></td><td><span class="role ref">ref</span></td><td>Frame-perfect capture with virtual time (<code>HeadlessExperimental.beginFrame</code>, 60 fps). Plan B if real-time capture drops frames on the VPS; Linux only, experimental.</td><td><code>npm i puppeteer-capture</code></td></tr>
+          <tr><td><a href="https://github.com/remotion-dev/remotion/tree/main/packages/skills">remotion-dev skills</a></td><td><span class="role ref">ref</span></td><td>Alternative renderer. HyperFrames ships <code>/remotion-to-hyperframes</code>, so Remotion examples can be converted.</td><td><code>npx skills add remotion-dev/skills</code></td></tr>
+          <tr><td><a href="https://github.com/webadderallorg/Recordly">Recordly</a> · <a href="https://github.com/siddharthvaddem/openscreen">OpenScreen</a> · <a href="https://github.com/syi0808/screenize">Screenize</a></td><td><span class="role ref">ref</span></td><td>Open-source Screen Studio alternatives. Reference for zoom suggestions from cursor activity, spring-physics camera, motion blur, cursor smoothing and backgrounds.</td><td>desktop apps, not dependencies</td></tr>
+          <tr><td><a href="https://xdsoft.net/blog/ai-powered-demo-video-recorder">Jodit AI demo recorder</a> · <a href="https://flaviocopes.com/record-demo-video-playwright/">flaviocopes guide</a></td><td><span class="role ref">ref</span></td><td>Bezier cursor timing, idle detection with a MutationObserver, ffmpeg trim-and-concat, the ~0.8 s Playwright offset, canned data for stable takes.</td><td>articles</td></tr>
+          <tr><td><a href="https://code.claude.com/docs/en/plugins">Claude Code plugins docs</a></td><td><span class="role core">core</span></td><td>Plugin layout, <code>plugin.json</code>, <code>marketplace.json</code>, install and reload commands.</td><td>docs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section>
+    <div class="sec-head"><span class="n">08</span><div><h2>Plugin structure</h2><p>The repo is its own marketplace, so one command adds it. Component folders sit at the plugin root; only <code>plugin.json</code> lives in <code>.claude-plugin/</code>.</p></div></div>
+    <div class="grid2">
+<pre class="tree"><span class="d">demo-director/</span>
+├── <span class="d">.claude-plugin/</span>
+│   ├── plugin.json
+│   └── marketplace.json
+├── <span class="d">commands/</span>
+│   ├── new.md        <span class="c"># full interactive run</span>
+│   ├── scenario.md   <span class="c"># write / edit scenario</span>
+│   ├── record.md     <span class="c"># rehearse + record</span>
+│   └── render.md     <span class="c"># direct + compose + render</span>
+├── <span class="d">skills/</span>
+│   ├── demo-director/SKILL.md
+│   ├── scenario-writer/SKILL.md
+│   └── camera-director/SKILL.md
+├── <span class="d">scripts/</span>
+│   ├── record.mjs    <span class="c"># Playwright + events.json</span>
+│   ├── direct.mjs    <span class="c"># events → keyframes</span>
+│   ├── compose.mjs   <span class="c"># keyframes → HyperFrames</span>
+│   └── subtitles.mjs <span class="c"># beats → .srt / .vtt</span>
+├── <span class="d">templates/</span>       <span class="c"># HyperFrames comps</span>
+├── scripts/doctor.sh  <span class="c"># checks node, ffmpeg, fonts</span>
+└── README.md</pre>
+      <div style="display:grid;gap:16px;align-content:start;min-width:0">
+        <div class="code"><button class="copy" type="button">Copy</button><pre><span class="c"># install (any machine with Claude Code)</span>
+claude plugin marketplace add amircodington/&lt;repo&gt;
+claude plugin install demo-director@demo-director
+claude plugin marketplace add heygen-com/hyperframes
+claude plugin install hyperframes@hyperframes
+bash ~/.claude/plugins/.../scripts/doctor.sh</pre></div>
+        <div class="code"><button class="copy" type="button">Copy</button><pre><span class="c"># inside Claude Code</span>
+/demo-director:new https://your-app.com
+/demo-director:scenario   <span class="c"># edit the plan</span>
+/demo-director:record     <span class="c"># re-take only</span>
+/demo-director:render     <span class="c"># re-direct, no re-take</span></pre></div>
+        <div class="note"><b>VPS note.</b> The VPS has no screen, which is fine: Chromium runs headless. It does need <code>fonts-vazirmatn</code> (or Vazirmatn installed by hand) and <code>fonts-noto-color-emoji</code>, or Persian text and icons render as boxes.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section>
+    <div class="sec-head"><span class="n">09</span><div><h2>Skill drafts</h2><p>The main skill, written the way it will ship. The two helper skills follow the same shape.</p></div></div>
+    <div class="code"><button class="copy" type="button">Copy</button><pre>---
+name: demo-director
+description: Record a polished, silent product demo of a web app with camera zooms,
+  a smooth cursor, callouts and timed subtitles (.srt/.vtt), rendered with HyperFrames.
+  Use when the user wants a demo video, walkthrough, feature tour or presentation
+  recording of a website or web app.
+---
+
+# Demo Director
+
+## Always start by asking
+1. Desktop (16:9, 1920x1080) or mobile (9:16, 1080x1920)? Never assume.
+2. The app URL and whether it needs a login. If it does, run
+   `node scripts/record.mjs --login` so the user signs in once; store
+   `.demo/auth.json` and never echo credentials.
+3. Subtitle language(s) and target length (default 60–90 s).
+
+## Steps
+1. Discover: open the app with playwright-cli, list routes and features,
+   take one screenshot per page. Prefer role/label selectors.
+2. Scenario: write `.demo/scenario.yaml` (see templates/scenario.example.yaml).
+   One scene per feature, 2–5 beats each, every beat has a `say` line of
+   at most 12 words per language. Show it as a table and wait for approval.
+3. Rehearse: `node scripts/record.mjs --dry-run`. Fix failing selectors; do
+   not change the story without asking.
+4. Record: `node scripts/record.mjs` → `.demo/raw.mp4` + `.demo/events.json`.
+5. Direct: `node scripts/direct.mjs` → camera and cursor keyframes.
+6. Compose and check: `node scripts/compose.mjs`, then a HyperFrames snapshot
+   of one frame per scene. Show the storyboard before the final render.
+7. Render: HyperFrames render, no audio track, then
+   `node scripts/subtitles.mjs` → `out/demo.&lt;lang&gt;.srt` and `.vtt`.
+
+## Rules
+- Use demo or seeded data; never record real balances, emails or tokens.
+- Max camera zoom 2.2x; every move eases in and out over 0.6–1.2 s.
+- Hold 1.5 s after each important click so viewers can read.
+- Subtitle cues: 1–2 lines, 42 characters per line max, 1.2 s minimum.</pre></div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="card"><span class="label">scenario-writer</span><h3>Story before clicks</h3><p>Orders features by value, not by menu order: hook in the first 5 seconds, core workflow, two "wow" features, closing shot of the dashboard. Writes subtitles in plain spoken language, Persian right-to-left safe.</p></div>
+      <div class="card"><span class="label">camera-director</span><h3>Taste rules for motion</h3><p>Wide shot when a page loads, focus when acting, never zoom twice within 2 seconds, pan instead of zoom-out-zoom-in for neighbouring targets, and a slow push-in on the final frame.</p></div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section>
+    <div class="sec-head"><span class="n">10</span><div><h2>Your call</h2><p>I've marked what I'll build with unless you say otherwise. Only the first one blocks me.</p></div></div>
+    <div class="dec">
+      <div class="card"><span class="q">A</span><h3>Create the public GitHub repo</h3><p>I can't create repos from here. Make an empty public repo (suggested name <code>demo-director</code>) and tell me its name; I'll attach it, push the plugin and write the README.</p></div>
+      <div class="card"><span class="q">B</span><h3>Desktop look</h3><p>Browser window framed on a soft background (Screen Studio style), or the app filling the whole frame.</p><span class="rec-pick">default → framed browser window</span></div>
+      <div class="card"><span class="q">C</span><h3>Mobile look</h3><p>Full-screen 9:16 for Reels and Stories, or a phone mockup inside a 16:9 frame for presentations.</p><span class="rec-pick">default → full-screen 9:16</span></div>
+      <div class="card"><span class="q">D</span><h3>Subtitle languages</h3><p>English, Persian, or both as separate files.</p><span class="rec-pick">default → both</span></div>
+      <div class="card"><span class="q">E</span><h3>The VPS</h3><p>To clone and run it on your VPS I'll start a Remote Control session there. Keep your "VPS" Claude session running so I can reach it.</p><span class="rec-pick">I'll ask when the repo is ready</span></div>
+    </div>
+  </section>
+
+  <p class="foot">Sources checked on 2026-10-28: HyperFrames README, Playwright 1.59 release notes, playwright.dev agent CLI docs, Pagecast listing, the skills listed above, and your Oct 20 HyperFrames chat and Oct 22 TIZ chats.</p>
+</div>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var pre=b.parentElement.querySelector('pre');var t=pre.innerText;
+    var done=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1400)};
+    try{navigator.clipboard.writeText(t).then(done,function(){sel(pre);b.textContent='Selected'})}catch(e){sel(pre);b.textContent='Selected'}
+  });
+});
+function sel(el){try{var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}}
+</script>
