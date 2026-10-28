@@ -7,7 +7,8 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 export function stageMap(format) {
   const { viewport, out } = FORMATS[format];
   const desktop = format === 'desktop';
-  return { k: (desktop ? 1536 : out.width) / viewport.width, ox: desktop ? 192 : 0, oy: desktop ? 130 : 0, W: out.width, H: out.height };
+  // A phone screen is already close-up, so mobile zooms less.
+  return { k: (desktop ? 1536 : out.width) / viewport.width, ox: desktop ? 192 : 0, oy: desktop ? 130 : 0, W: out.width, H: out.height, maxZoom: desktop ? 2.2 : 1.5 };
 }
 
 export function toStage(b, { k, ox, oy }) {
@@ -47,7 +48,7 @@ const WIDE = { t: -Infinity, scale: 1, x: 0, y: 0 };
 export function cameraFor(box, stage, prev = WIDE, t) {
   const { W, H } = stage;
   const start = r(Math.max(0, t - 0.45));
-  let s = box ? Math.max(1, Math.min(2.2, W / (box.w * 1.6), H / (box.h * 1.6))) : 1;
+  let s = box ? Math.max(1, Math.min(stage.maxZoom ?? 2.2, W / (box.w * 1.6), H / (box.h * 1.6))) : 1;
   if (prev.scale > 1 && start - prev.t < 2) s = prev.scale; // already zoomed: pan, do not re-zoom
   const [cx, cy] = box ? [box.x + box.w / 2, box.y + box.h / 2] : [W / 2, H / 2];
   const f = frame(cx, cy, s, stage);

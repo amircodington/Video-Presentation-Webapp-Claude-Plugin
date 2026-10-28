@@ -14,7 +14,7 @@ change the take, so they need `record` again.
 | Field | Effect |
 |---|---|
 | `camera: wide` | Full frame (scale 1). Default for beats without a target and for `goto`. |
-| `camera: focus` | Zoom to the beat's target: scale = min(2.2, W/(w·1.6), H/(h·1.6)), centred, clamped so the frame never leaves the stage. Default for beats with a target. |
+| `camera: focus` | Zoom to the beat's target: scale = min(2.2 desktop or 1.5 mobile, W/(w·1.6), H/(h·1.6)), centred, clamped so the frame never leaves the stage. Default for beats with a target. |
 | `callout` | Accent label next to the target, shown from the action to the end of the hold. |
 | `hold` | Seconds the take stays still after the action (default 1.0) — reading time for the shot. |
 

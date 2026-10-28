@@ -12,7 +12,7 @@ camera zooms, a smooth cursor, callouts, chapter cards and English and Persian s
 3. **Scenario**: writes `.demo/scenario.yaml`, shows it as a table, and waits for your approval.
 4. **Rehearse**: a dry run checks every selector without filming.
 5. **Record**: a clean Playwright take (no effects) → `raw.mp4` + `events.json`.
-6. **Direct**: events become camera moves (max 2.2× zoom, eased), cursor arcs and click ripples; idle time is cut.
+6. **Direct**: events become camera moves (max 2.2× zoom on desktop, 1.5× on mobile, eased), cursor arcs and click ripples; idle time is cut.
 7. **Compose**: a HyperFrames composition with the take, camera, cursor, callouts and chapter cards; subtitles from beat times.
 8. **Render**: storyboard for review, then a silent MP4 via HyperFrames.
 
@@ -154,7 +154,7 @@ node scripts/demo.mjs all --scenario examples/sample-app/scenario.yaml \
 | Persian text or emoji show as boxes | `sudo apt-get install -y fonts-vazirmatn fonts-noto-color-emoji && fc-cache -f` |
 | Chromium fails to start (missing libraries) | `sudo npx playwright install --with-deps chromium` in the plugin dir |
 | `selector not found` / timeout on a beat | `record --dry-run` lists every failing target; switch to `role=…` or `label=…` |
-| Zoom looks blurry | Zoom is capped at 2.2× of a dpr-2 (mobile dpr-3) take; focus on a larger target or use `camera: wide` |
+| Zoom looks blurry | Zoom is capped at 2.2× (1.5× on mobile) of a dpr-2 (mobile dpr-3) take; focus on a larger target or use `camera: wide` |
 | Render is slow | `render --draft` (or `all --draft`) for previews |
 | The MP4 has no sound | By design: the video is silent; subtitles are separate files |
 | HyperFrames can't find Chrome | `node node_modules/hyperframes/bin/hyperframes.mjs browser ensure` in the plugin dir (or run the doctor) |

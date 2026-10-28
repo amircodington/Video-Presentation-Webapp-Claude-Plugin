@@ -112,3 +112,8 @@ test('cursor moves arc to each point and end at the action time', () => {
   const off = Math.abs((end.x - start.x) * (mid.y - start.y) - (end.y - start.y) * (mid.x - start.x));
   assert.ok(off > 1, 'path is an arc, not a straight line');
 });
+
+test('mobile zoom is capped lower than desktop', () => {
+  const mob = stageMap('mobile');
+  assert.equal(cameraFor({ x: 500, y: 900, w: 40, h: 20 }, mob, undefined, 5).scale, 1.5);
+});
