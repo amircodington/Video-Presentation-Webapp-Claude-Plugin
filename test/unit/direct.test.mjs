@@ -5,8 +5,8 @@ import { stageMap, toStage, cutPlan, remap, cameraFor, direct } from '../../scri
 const desk = stageMap('desktop');
 
 test('stageMap maps viewport CSS px to stage px', () => {
-  assert.deepEqual(desk, { k: 1536 / 1440, ox: 192, oy: 130, W: 1920, H: 1080 });
-  assert.deepEqual(stageMap('mobile'), { k: 1080 / 390, ox: 0, oy: 0, W: 1080, H: 1920 });
+  assert.deepEqual(desk, { k: 1536 / 1440, ox: 192, oy: 130, W: 1920, H: 1080, maxZoom: 2.2 });
+  assert.deepEqual(stageMap('mobile'), { k: 1080 / 390, ox: 0, oy: 0, W: 1080, H: 1920, maxZoom: 1.5 });
   assert.deepEqual(toStage({ x: 0, y: 0, w: 1440, h: 810 }, desk), { x: 192, y: 130, w: 1536, h: 864 });
   assert.deepEqual(toStage({ x: 720, y: 405 }, desk), { x: 960, y: 562 });
 });
