@@ -56,9 +56,12 @@ export function cameraFor(box, stage, prev = WIDE, t) {
   return { t: start, dur: r(clamp(dist / 1000, 0.6, 1.2)), ...f };
 }
 
-function pushIn(prev, stage, duration) {
-  const cx = (stage.W / 2 - prev.x) / prev.scale, cy = (stage.H / 2 - prev.y) / prev.scale;
-  return { t: r(duration - 3), dur: 3, ...frame(cx, cy, prev.scale * 1.06, stage) };
+// Ending: back to wide after the last beat, then a slow 6% push-in until the end.
+function outro(prev, stage, t, duration) {
+  const wide = cameraFor(null, stage, { ...prev, t: -Infinity }, t + 0.45);
+  const start = wide ? r(wide.t + wide.dur) : t;
+  if (duration - start < 1) return wide ? [wide] : [];
+  return [...(wide ? [wide] : []), { t: start, dur: r(duration - start), ...frame(stage.W / 2, stage.H / 2, 1.06, stage) }];
 }
 
 // Quadratic bezier from a to b, control point pushed sideways by 20% of the distance; 8 samples.
@@ -84,7 +87,9 @@ export function direct(events, { format }) {
     const key = cameraFor(box, map, camera.at(-1), at(b.t));
     if (key) camera.push(key);
   }
-  if (duration > 4) camera.push(pushIn(camera.at(-1) ?? WIDE, map, duration));
+  const last = camera.at(-1) ?? WIDE;
+  const lastEnd = Math.max(at(beats.at(-1)?.end ?? 0), last.t + (last.dur ?? 0));
+  camera.push(...outro(last, map, lastEnd, duration));
 
   const cursor = [];
   let from = { x: map.W / 2, y: map.H / 2 };

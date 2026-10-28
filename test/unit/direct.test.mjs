@@ -87,10 +87,12 @@ test('direct builds the direct.json shape with remapped times', () => {
   assert.deepEqual(d.cues, [{ t: 3, end: 4, say: { en: 'Hi', fa: 'سلام' } }]);
   assert.equal(d.camera[0].t, 2.55);
   assert.equal(d.camera[1].t, 9.85);
-  const push = d.camera.at(-1);
-  assert.equal(push.t, 15.3);
-  assert.equal(push.dur, 3);
-  assert.equal(push.scale, +(d.camera.at(-2).scale * 1.06).toFixed(3));
+  const [wide, push] = d.camera.slice(-2);
+  assert.equal(wide.t, 11.3); // back to wide once the last beat ends
+  assert.equal(wide.scale, 1);
+  assert.equal(push.t, +(wide.t + wide.dur).toFixed(3));
+  assert.equal(push.scale, 1.06);
+  assert.equal(+(push.t + push.dur).toFixed(3), d.duration);
 });
 
 test('cursor moves arc to each point and end at the action time', () => {

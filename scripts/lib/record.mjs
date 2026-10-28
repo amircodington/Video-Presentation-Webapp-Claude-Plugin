@@ -169,20 +169,24 @@ export async function record(scenario, { workDir, dryRun = false, log = console.
     const beats = [];
     const scenes = [];
     for (const [i, sc] of scenario.scenes.entries()) {
-      const scene = { id: sc.id, title: sc.title ?? '', t: Date.now() };
+      const scene = { id: sc.id, title: sc.title ?? '' };
       log(`Scene ${sc.id}`);
-      await page.waitForTimeout(1600);
+      // Still time for the chapter card (D12), shown on the scene's own page: after a leading goto.
+      const cardPause = async () => { scene.t = Date.now(); await page.waitForTimeout(1600); };
+      if (sc.beats[0]?.do !== 'goto') await cardPause();
       for (const [j, beat] of sc.beats.entries()) {
         const ev = await step(beat, `scenes[${i}].beats[${j}]`, markIdle);
         beats.push({
           scene: sc.id, sceneTitle: scene.title, index: j, do: beat.do, ...ev,
           camera: beat.camera, callout: beat.callout, say: beat.say,
         });
+        if (j === 0 && beat.do === 'goto') await cardPause();
       }
       scene.end = Date.now();
       scenes.push(scene);
     }
 
+    await page.waitForTimeout(2500); // outro: room for the final wide shot and push-in
     const endTs = Date.now();
     await page.screencast.stop();
     await Promise.all(writes);
