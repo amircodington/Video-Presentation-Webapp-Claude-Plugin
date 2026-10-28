@@ -1,0 +1,9 @@
+{
+  "name": "demo-director",
+  "version": "0.1.0",
+  "description": "Turn a web app URL into a polished, silent presentation video with English and Persian subtitles.",
+  "author": { "name": "Mohammad" },
+  "repository": "https://github.com/amircodington/Video-Presentation-Webapp-Claude-Plugin",
+  "license": "MIT",
+  "keywords": ["demo", "video", "screencast", "playwright", "hyperframes", "subtitles"]
+}

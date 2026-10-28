@@ -1,0 +1,12 @@
+{
+  "name": "demo-director",
+  "owner": { "name": "Mohammad" },
+  "plugins": [
+    {
+      "name": "demo-director",
+      "source": "./",
+      "description": "Turn a web app URL into a polished, silent presentation video with English and Persian subtitles.",
+      "version": "0.1.0"
+    }
+  ]
+}

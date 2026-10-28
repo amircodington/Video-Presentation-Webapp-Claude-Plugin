@@ -1,0 +1,67 @@
+# Demo Director scenario: the single source of truth for one video.
+# Copy to .demo/scenario.yaml and edit. Run `record --dry-run` to rehearse.
+
+video:
+  format: desktop            # desktop (1920x1080, browser window) or mobile (1080x1920)
+  url: http://localhost:4173 # base URL; beat `path` values are relative to it
+  # auth: .demo/auth.json    # optional Playwright storage state (logged-in session)
+  subtitles: [en, fa]        # one .srt and .vtt per language
+  style:
+    background: soft-gradient
+    accent: "#2747D9"        # callout and highlight colour
+
+# Optional beats run before recording starts (not filmed), e.g. logging in.
+# `$ENV{NAME}` in `text` is read from the environment and never saved.
+setup:
+  - do: goto
+    path: /login
+  - do: type
+    target: label=Email
+    text: $ENV{DEMO_EMAIL}
+  - do: type
+    target: label=Password
+    text: $ENV{DEMO_PASSWORD}
+  - do: press
+    key: Enter
+
+# Each scene opens with a chapter card showing its title.
+scenes:
+  - id: dashboard              # required, unique
+    title: Everything at a glance
+    beats:
+      # do: goto | click | hover | type | press | scroll | wait
+      - do: goto
+        path: /                # or `url:` for an absolute address
+        say:
+          en: Your whole business, on one screen.
+          fa: کل کسب‌وکار شما، در یک صفحه.
+      - do: hover
+        target: role=region[name="Revenue"]   # Playwright selector, or label=…
+        camera: focus          # wide (default without target) or focus (default with target)
+        callout: Live revenue
+        hold: 1.5              # seconds to stay after the action (default 1.0)
+        say:
+          en: Revenue updates in real time.
+          fa: درآمد به‌صورت لحظه‌ای به‌روز می‌شود.
+
+  - id: reports
+    title: Reports in seconds
+    beats:
+      - do: click
+        target: role=link[name="Reports"]
+      - do: type
+        target: role=searchbox
+        text: Q3
+        say:
+          en: Find any report by typing.
+          fa: هر گزارشی را با تایپ کردن پیدا کنید.
+      - do: click
+        target: role=button[name="Export"]
+        callout: Export
+        say:
+          en: Export it with one click.
+          fa: با یک کلیک آن را خروجی بگیرید.
+      - do: scroll
+        camera: wide
+      - do: wait
+        hold: 2
