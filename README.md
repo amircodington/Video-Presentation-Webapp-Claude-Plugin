@@ -5,6 +5,14 @@ camera zooms, a smooth cursor, callouts, chapter cards and English and Persian s
 
 ![Demo](docs/media/demo.gif)
 
+<p>
+  <img src="docs/media/poster.png" alt="Desktop: the app framed in a browser window on a soft background" width="66%">
+  <img src="docs/media/mobile.png" alt="Mobile: full-screen 9:16" width="22%">
+</p>
+
+The GIF and stills come from the real sample run in this repo (`examples/sample-app`): a 21-second
+1920×1080 desktop video and a 1080×1920 mobile video, both silent, with `demo.en.srt/.vtt` and `demo.fa.srt/.vtt`.
+
 ## What it does
 
 1. **Ask**: desktop or mobile, URL, login, subtitle languages, target length.
