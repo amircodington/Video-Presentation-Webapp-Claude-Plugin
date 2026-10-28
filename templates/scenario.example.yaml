@@ -7,7 +7,6 @@ video:
   # auth: .demo/auth.json    # optional Playwright storage state (logged-in session)
   subtitles: [en, fa]        # one .srt and .vtt per language
   style:
-    background: soft-gradient
     accent: "#2747D9"        # callout and highlight colour
 
 # Optional beats run before recording starts (not filmed), e.g. logging in.

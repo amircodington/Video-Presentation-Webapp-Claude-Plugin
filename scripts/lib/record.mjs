@@ -36,7 +36,7 @@ export function framesToMp4(framesDir, frames, endTs, out, fps = 30) {
   const list = join(framesDir, 'list.ffconcat');
   writeFileSync(list, concatList(frames, endTs));
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', list,
-    '-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', '-r', String(fps), '-fps_mode', 'cfr',
+    '-vf', `scale=trunc(iw/2)*2:trunc(ih/2)*2,fps=${fps}`,
     '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', out]);
 }
 
@@ -44,7 +44,10 @@ function contextOptions(video) {
   const f = FORMATS[video.format];
   const opts = { viewport: f.viewport, deviceScaleFactor: f.dpr };
   if (f.isMobile) Object.assign(opts, { isMobile: true, hasTouch: true, userAgent: devices['iPhone 15'].userAgent });
-  if (video.auth && existsSync(video.auth)) opts.storageState = video.auth;
+  if (video.auth) {
+    if (!existsSync(video.auth)) throw new Error(`video.auth: ${video.auth} not found`);
+    opts.storageState = video.auth;
+  }
   return opts;
 }
 
@@ -87,7 +90,7 @@ async function runBeat(page, beat, { video, mobile, dry, where, idle }) {
   switch (beat.do) {
     case 'goto': {
       const url = beat.url ?? new URL(beat.path, video.url).href;
-      ev.path = beat.path ?? new URL(url).pathname;
+      ev.path = new URL(url).pathname;
       await page.goto(url);
       idle(ev.t, Date.now());
       await settle();

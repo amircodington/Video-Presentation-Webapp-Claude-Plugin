@@ -88,7 +88,7 @@ video:
   format: desktop              # desktop | mobile
   url: http://localhost:4173   # base URL for `path`
   subtitles: [en, fa]
-  style: { background: soft-gradient, accent: "#2747D9" }
+  style: { accent: "#2747D9" }
 setup:                         # optional, not filmed (e.g. login)
   - { do: goto, path: /login }
   - { do: type, target: label=Email, text: $ENV{DEMO_EMAIL} }   # secret read from env, never saved

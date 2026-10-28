@@ -147,8 +147,19 @@ function cutTake(raw, out, keep, duration) {
     '-an', '-c:v', 'libx264', '-crf', '16', '-pix_fmt', 'yuv420p', out]);
 }
 
+// Story fields come from the current scenario, so editing say/callout/camera/title needs no re-take.
+export function applyScenario(events, scenario) {
+  const scenes = new Map(scenario.scenes.map((s) => [s.id, s]));
+  for (const sc of events.scenes) sc.title = scenes.get(sc.id)?.title ?? sc.title;
+  for (const b of events.beats) {
+    const sb = scenes.get(b.scene)?.beats[b.index];
+    if (sb) Object.assign(b, { camera: sb.camera, callout: sb.callout, say: sb.say });
+  }
+  return events;
+}
+
 export function compose(workDir, scenario) {
-  const events = JSON.parse(readFileSync(join(workDir, 'events.json'), 'utf8'));
+  const events = applyScenario(JSON.parse(readFileSync(join(workDir, 'events.json'), 'utf8')), scenario);
   const format = events.format ?? scenario.video.format;
   const d = direct(events, { format });
   writeFileSync(join(workDir, 'direct.json'), JSON.stringify(d, null, 2));

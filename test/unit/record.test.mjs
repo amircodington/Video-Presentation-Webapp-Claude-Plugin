@@ -59,7 +59,7 @@ test('record films a tiny page into raw.mp4 + events.json', { timeout: 60000 }, 
   assert.deepEqual(saved, JSON.parse(JSON.stringify(events)));
   assert.equal(saved.beats.length, 3);
   for (const b of saved.beats) assert.ok(b.t < b.end, `${b.do}: t < end`);
-  assert.equal(saved.beats[0].path, 'index.html');
+  assert.ok(saved.beats[0].path.endsWith('/index.html')); // resolved path, as the address bar shows it
   for (const b of saved.beats.slice(1)) assert.ok(b.box.w > 0 && b.box.h > 0 && b.point.x > 0);
   assert.equal(saved.beats[2].text, '•••');
   assert.ok(!readFileSync(join(dir, 'events.json'), 'utf8').includes('hunter2'));

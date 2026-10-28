@@ -36,7 +36,7 @@ export function normalizeScenario(obj) {
     format: 'desktop',
     subtitles: ['en', 'fa'],
     ...obj.video,
-    style: { background: 'soft-gradient', accent: '#2747D9', ...obj.video?.style },
+    style: { accent: '#2747D9', ...obj.video?.style },
   };
   if (!FORMATS[video.format]) errors.push('video.format: must be desktop or mobile');
 

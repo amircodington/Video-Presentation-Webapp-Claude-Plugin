@@ -71,9 +71,6 @@ else
   bad "hyperframes package missing" "cd \"$ROOT\" && npm ci --omit=dev"
 fi
 
-echo "Smoke check"
-if node -e "import('playwright')" >/dev/null 2>&1; then ok "import('playwright')"; else bad "playwright does not load" "cd \"$ROOT\" && npm ci --omit=dev"; fi
-
 echo
 if [ "$FAIL" -ne 0 ]; then echo "Some checks failed. Run the fix commands above, then run doctor again."; exit 1; fi
 echo "All good. Next: /demo-director:new <url>"

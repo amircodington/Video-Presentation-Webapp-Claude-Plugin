@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildHtml, compose } from '../../scripts/lib/compose.mjs';
+import { applyScenario, buildHtml, compose } from '../../scripts/lib/compose.mjs';
 import { normalizeScenario } from '../../scripts/lib/scenario.mjs';
 
 const d = {
@@ -69,4 +69,13 @@ test('compose cuts the idle gap and writes the comp', () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test('applyScenario takes story fields from the edited scenario', () => {
+  const sc = normalizeScenario({ video: { url: 'http://x' }, scenes: [{ id: 'a', title: 'New title',
+    beats: [{ do: 'click', target: '#b', camera: 'wide', callout: 'New', say: { en: 'New line' } }] }] });
+  const ev = applyScenario({ scenes: [{ id: 'a', title: 'Old' }],
+    beats: [{ scene: 'a', index: 0, do: 'click', camera: 'focus', callout: 'Old', say: { en: 'Old line' } }] }, sc);
+  assert.equal(ev.scenes[0].title, 'New title');
+  assert.deepEqual([ev.beats[0].camera, ev.beats[0].callout, ev.beats[0].say.en], ['wide', 'New', 'New line']);
 });

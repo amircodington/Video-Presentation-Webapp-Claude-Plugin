@@ -18,7 +18,7 @@ test('applies defaults', () => {
   const s = normalizeScenario(minimal());
   assert.equal(s.video.format, 'desktop');
   assert.deepEqual(s.video.subtitles, ['en', 'fa']);
-  assert.deepEqual(s.video.style, { background: 'soft-gradient', accent: '#2747D9' });
+  assert.deepEqual(s.video.style, { accent: '#2747D9' });
   const [goto, click, wait] = s.scenes[0].beats;
   assert.equal(goto.hold, 1.0);
   assert.equal(goto.camera, 'wide');
@@ -35,7 +35,7 @@ test('keeps explicit values', () => {
   obj.scenes[0].beats[1].hold = 2.5;
   const s = normalizeScenario(obj);
   assert.equal(s.video.format, 'mobile');
-  assert.deepEqual(s.video.style, { background: 'soft-gradient', accent: '#ff0000' });
+  assert.deepEqual(s.video.style, { accent: '#ff0000' });
   assert.equal(s.scenes[0].beats[1].camera, 'wide');
   assert.equal(s.scenes[0].beats[1].hold, 2.5);
 });

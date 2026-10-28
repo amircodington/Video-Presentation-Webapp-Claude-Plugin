@@ -49,7 +49,7 @@ export function cameraFor(box, stage, prev = WIDE, t) {
   const { W, H } = stage;
   const start = r(Math.max(0, t - 0.45));
   let s = box ? Math.max(1, Math.min(stage.maxZoom ?? 2.2, W / (box.w * 1.6), H / (box.h * 1.6))) : 1;
-  if (prev.scale > 1 && start - prev.t < 2) s = prev.scale; // already zoomed: pan, do not re-zoom
+  if (box && prev.scale > 1 && start - prev.t < 2) s = prev.scale; // already zoomed: pan, do not re-zoom
   const [cx, cy] = box ? [box.x + box.w / 2, box.y + box.h / 2] : [W / 2, H / 2];
   const f = frame(cx, cy, s, stage);
   if (f.scale === prev.scale && f.x === prev.x && f.y === prev.y) return null;

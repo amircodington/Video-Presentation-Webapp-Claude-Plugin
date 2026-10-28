@@ -27,7 +27,7 @@ video:
   url: http://localhost:3000    # base URL; beat `path` is relative to it
   auth: .demo/auth.json         # optional Playwright storage state
   subtitles: [en, fa]
-  style: { background: soft-gradient, accent: "#2747D9" }
+  style: { accent: "#2747D9" }
 setup:                          # optional, runs before filming (e.g. login)
   - { do: goto, path: /login }
   - { do: type, target: label=Email, text: $ENV{DEMO_EMAIL} }

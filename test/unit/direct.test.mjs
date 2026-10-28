@@ -54,6 +54,7 @@ test('camera keeps scale and pans when the last change was under 2 s ago', () =>
   assert.notEqual(b.x, a.x);
   const c = cameraFor({ x: 1000, y: 500, w: 800, h: 400 }, desk, a, 9);
   assert.notEqual(c.scale, a.scale);
+  assert.equal(cameraFor(null, desk, a, 6).scale, 1); // a page load goes wide at once
 });
 
 test('camera skips a key when nothing changes', () => {
